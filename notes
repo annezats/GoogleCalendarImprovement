@@ -1,0 +1,23 @@
+the setup code is from python quickstart
+
+authorize my calendar
+input day
+search all events in that day (all day and timed)
+maybe stick them in a variable
+loop delete all events
+* for recurring events, delete only this occurence
+*for event that is multiday, give error message
+ADD TO GITHUB
+
+find out how to grab calendar IDs (done)
+make it go through both primary and classes calendars (done)
+give deleting permissions (done)
+test it! (done!)
+
+stretch goals:
+figure out how to use as calendar add-on
+make it work for multiple day stretches
+make it work for different time zones
+
+NOTE: this folder also includes credentials.json,
+which i did not upload cause that has my personal credentials
