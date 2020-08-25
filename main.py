@@ -1,5 +1,5 @@
 from __future__ import print_function
-import datetime #dont rlly need it
+import time
 import pickle
 import os.path
 from googleapiclient.discovery import build
@@ -30,21 +30,38 @@ def setup():
             pickle.dump(creds, token)
     return creds
 
-def get_day_info(timezone_offset):
+def timezone():
+    is_dst = time.daylight and time.localtime().tm_isdst > 0
+    offset = - (time.altzone if is_dst else time.timezone)/3600
+
+    if isinstance(offset, int):
+        if offset<= -10:
+            timezone_offset=str(offset)+":00";
+        elif offset< 0:
+            offset=-offset
+            timezone_offset="-0"+str(offset)+":00"
+        elif offset>= 0 and offset<10: #get it to be less than 10
+            timezone_offset="+0"+str(offset)+":00"
+        else:
+            timezone_offset='+'+str(offset)+":00"
+    return timezone_offset
+
+def get_day_info():
     print('enter the day you want to clear in DDMMYYYY format: ')
     day= raw_input() #returns string
     date=day[4:8]+"-"+day[2:4]+"-"+day[0:2]
+    timezone_offset=timezone()
     startofday= date+"T00:00:00"+timezone_offset
     endofday=date+"T23:59:59"+timezone_offset
     dayinfo= [startofday, endofday]
     return dayinfo
 
-def get_cal_IDs(cal, allowedcalendars):
+def get_cal_IDs(cal, extraallowedcalendars):
     allowedcalIDs=[]
     callist=cal.calendarList().list().execute() #gets list of all calendars
     calendars=callist.get('items', [])
     for calendar in calendars: #compares list of all cals to list of allowed cals
-        for ac in allowedcalendars:
+        for ac in extraallowedcalendars:
             if calendar['summary']== ac:
                 allowedcalIDs.append(calendar['id']) #sticks the calID into a list
     return allowedcalIDs
@@ -52,13 +69,12 @@ def get_cal_IDs(cal, allowedcalendars):
 def main():
     creds= setup()
     cal = build('calendar', 'v3', credentials=creds)
-    calendarID= "primary";
-    timezone_offset="-04:00"#cal.settings.get(timezone).execute()
 
-    allowedcalendars=['anne.zats@macaulay.cuny.edu','Classes']
-    allowedcalIDs=get_cal_IDs(cal, allowedcalendars)
+    extraallowedcalendars=['Classes']
+    allowedcalIDs=['primary']
+    allowedcalIDs=get_cal_IDs(cal, extraallowedcalendars)
 
-    dayinfo=get_day_info(timezone_offset)
+    dayinfo=get_day_info()
     print(dayinfo)
 
     for calendarID in allowedcalIDs:
