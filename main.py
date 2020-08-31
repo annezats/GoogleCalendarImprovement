@@ -47,12 +47,18 @@ def timezone():
     return timezone_offset
 
 def get_day_info():
-    print('enter the day you want to clear in DDMMYYYY format: ')
+    print('enter the day you want to start clearing in DDMMYYYY format: ')
     day= raw_input() #returns string
     date=day[4:8]+"-"+day[2:4]+"-"+day[0:2]
     timezone_offset=timezone()
     startofday= date+"T00:00:00"+timezone_offset
+    print('if you want to clear multiple days, enter ending day in DDMMYYYY format, otherwise hit ENTER')
     endofday=date+"T23:59:59"+timezone_offset
+    endofday=raw_input()
+    if endofday== "":
+        endofday=date+"T23:59:59"+timezone_offset
+    else:
+        endofday=endofday[4:8]+"-"+endofday[2:4]+"-"+endofday[0:2]+"T23:59:59"+timezone_offset
     dayinfo= [startofday, endofday]
     return dayinfo
 
@@ -70,7 +76,7 @@ def main():
     creds= setup()
     cal = build('calendar', 'v3', credentials=creds)
 
-    extraallowedcalendars=['Classes']
+    extraallowedcalendars=['Classes', 'antonio.manto224@gmail.com']
     allowedcalIDs=['primary']
     allowedcalIDs=get_cal_IDs(cal, extraallowedcalendars)
 
