@@ -1,5 +1,6 @@
 from __future__ import print_function
 import time
+import datetime
 import pickle
 import os.path
 from googleapiclient.discovery import build
@@ -30,9 +31,11 @@ def setup():
             pickle.dump(creds, token)
     return creds
 
-def timezone():
+def timezone(): #DOESNT WORK
     is_dst = time.daylight and time.localtime().tm_isdst > 0
     offset = - (time.altzone if is_dst else time.timezone)/3600
+
+    timezone_offset=''
 
     if isinstance(offset, int):
         if offset<= -10:
@@ -44,17 +47,25 @@ def timezone():
             timezone_offset="+0"+str(offset)+":00"
         else:
             timezone_offset='+'+str(offset)+":00"
+
     return timezone_offset
+
+def timezone_simple():
+    is_dst=time.daylight and time.localtime().tm_isdst > 0
+    if is_dst:
+        return "-04:00"
+    else:
+        return "-05:00"
 
 def get_day_info():
     print('enter the day you want to start clearing in DDMMYYYY format: ')
-    day= raw_input() #returns string
+    day= input() #returns string
     date=day[4:8]+"-"+day[2:4]+"-"+day[0:2]
-    timezone_offset=timezone()
+    timezone_offset=timezone_simple()
     startofday= date+"T00:00:00"+timezone_offset
     print('if you want to clear multiple days, enter ending day in DDMMYYYY format, otherwise hit ENTER')
     endofday=date+"T23:59:59"+timezone_offset
-    endofday=raw_input()
+    endofday=input()
     if endofday== "":
         endofday=date+"T23:59:59"+timezone_offset
     else:
@@ -76,8 +87,8 @@ def main():
     creds= setup()
     cal = build('calendar', 'v3', credentials=creds)
 
-    extraallowedcalendars=['Classes', 'antonio.manto224@gmail.com']
-    allowedcalIDs=['primary']
+    extraallowedcalendars=['Annes Classes']
+    allowedcalIDs=['primary'] #DOESNT WORK
     allowedcalIDs=get_cal_IDs(cal, extraallowedcalendars)
 
     dayinfo=get_day_info()
@@ -95,3 +106,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    #comment for testing
