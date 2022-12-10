@@ -73,12 +73,12 @@ def get_day_info():
     dayinfo= [startofday, endofday]
     return dayinfo
 
-def get_cal_IDs(cal, extraallowedcalendars):
+def get_cal_IDs(cal, allowedcals):
     allowedcalIDs=[]
     callist=cal.calendarList().list().execute() #gets list of all calendars
     calendars=callist.get('items', [])
     for calendar in calendars: #compares list of all cals to list of allowed cals
-        for ac in extraallowedcalendars:
+        for ac in allowedcals:
             if calendar['summary']== ac:
                 allowedcalIDs.append(calendar['id']) #sticks the calID into a list
     return allowedcalIDs
@@ -87,10 +87,9 @@ def main():
     creds= setup()
     cal = build('calendar', 'v3', credentials=creds)
 
-    extraallowedcalendars=['Annes Classes']
-    allowedcalIDs=['primary'] #DOESNT WORK
-    allowedcalIDs=get_cal_IDs(cal, extraallowedcalendars)
-
+    allowedcals=['Annes Classes','anne.zats@macaulay.cuny.edu']
+    allowedcalIDs=get_cal_IDs(cal, allowedcals)
+    print(allowedcalIDs)
     dayinfo=get_day_info()
     print(dayinfo)
 
